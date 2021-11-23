@@ -1,6 +1,6 @@
 from flask import Flask,jsonify,make_response,request,abort
-import json
-import sqlite3
+import json,sqlite3
+
 app = Flask(__name__)
 app.config['JSONIFY_PRETTYPRINT_REGULAR'] = False
 
@@ -104,6 +104,27 @@ def add_user(new_user):
 		return "Success"
 	conn.close()
 	return jsonify(a_dict)
-	
+
+@app.route('/api/v1/users', methods=['DELETE'])
+def delete_user():
+	if not request.json or not 'username' in request.json:
+		abort(400)
+	user=request.json['username']
+	return jsonify({'status': del_user(user)}), 200
+def del_user(del_user):
+	conn = sqlite3.connect('mydb.db')
+	print ("Opened database successfully");
+	cursor=conn.cursor()
+	cursor.execute("SELECT * from users where username=? ",(del_user,))
+	data = cursor.fetchall()
+	print ("Data" ,data)
+	if len(data) == 0:
+		abort(404)
+	else:
+		cursor.execute("delete from users where username==?",(del_user,))
+	conn.commit()
+	return "Success"
+
+
 if __name__ == "__main__":
 	app.run(host='0.0.0.0', port=5000, debug=True)
