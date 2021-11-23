@@ -5,7 +5,4 @@ curl -i -H "Content-Type: application/json" -X POST -d '{"username" : "mahesh@ro
 http://10.0.2.15:5000/api/v1/users?username=mahesh@rocks&email=mahesh99@gmail.com&password=mahesh123&name=Mahesh
 
 
-
-curl -i -X POST -H "Content-Type: application/json" -d '{"username" : "mahesh@rocks", "email" : "mahesh99@gmail.com","password" : "mahesh123", "name" : "Mahesh" }' http://10.0.2.15:5000/api/v1/users
-
-curl -H "Content-Type: application/json" -X POST -d '{"user":"bob", "pass":"123"}' http://URL/
+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
