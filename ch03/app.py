@@ -1,10 +1,41 @@
 from flask import Flask,jsonify,make_response,request,abort,\
-render_template
+render_template,session,redirect,url_for
+from flask_cors import CORS, cross_origin
 from time import gmtime,strftime
 import json,sqlite3
 
 app = Flask(__name__)
 app.config['JSONIFY_PRETTYPRINT_REGULAR'] = False
+CORS(app)
+app.secret_key = 'key'
+
+#cookie = flask.request.cookies.get('my_cookie')
+#@app.route('/set_cookie')
+def cookie_insertion():
+	redirect_to_main = redirect('/')
+	response = current_app.make_response(redirect_to_main )
+	response.set_cookie('cookie_name',value='values')
+	return response
+
+@app.route('/clear')
+def clearsession():
+	# Clear the session
+	session.clear()
+	# Redirect the user to the main page
+	return redirect(url_for('main'))
+
+@app.route('/addname')
+def addname():
+	if request.args.get('yourname'):
+		session['name'] = request.args.get('yourname')
+	# And then redirect the user to the main page
+		return redirect(url_for('main'))
+	else:
+		return render_template('addname.html', session=session)
+
+@app.route('/')
+def main():
+	return render_template('main.html')
 
 @app.route('/adduser')
 def adduser():
