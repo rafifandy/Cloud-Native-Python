@@ -51,7 +51,7 @@ import cookie from 'react-cookie';
     render(){
       return (
       <div>
-		 <h1>Welcome to cloud-native-app!</h1>
+		 <h3>Welcome to cloud-native-app!</h3>
          <Tweet sendTweet={this.addTweet.bind(this)}/>
          <TweetList tweets={this.state.tweets}/>
       </div>

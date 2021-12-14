@@ -4,7 +4,7 @@ export default class Tweet extends React.Component {
     this.props.sendTweet(this.refs.tweetTextArea.value);
     this.refs.tweetTextArea.value = '';
   }
-  /*
+  
   render(){
     return(
         <div className="row">
@@ -28,9 +28,10 @@ export default class Tweet extends React.Component {
     </div>
       );
     }
-    */
+    /*
     render(){
     return(
+		
         <div className="row">
          <form onSubmit={this.sendTweet.bind(this)}>
           <div className="input-field">
@@ -42,4 +43,5 @@ export default class Tweet extends React.Component {
        </div>
       );
     }
+    */
 }
