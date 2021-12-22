@@ -13,6 +13,10 @@ CORS(app)
 app.secret_key = 'key'
 
 connection = MongoClient('mongodb://localhost:27017/')
+app.config['MONGOALCHEMY_DATABASE'] = 'app'
+app.config['MONGOALCHEMY_CONNECTION_STRING'] = 'mongodb://localhost:27017/'
+app.config["MONGO_URI"] = 'mongodb://localhost:27017/'
+mongo=PyMongo(app)
 
 def create_mongodatabase():
 	try:
@@ -54,24 +58,87 @@ def create_mongodatabase():
 	except:
 		print ("Database creation failed!!")
 
+@app.route('/profile', methods=['GET', 'POST'])
+def profile():
+    if request.method=='POST':
+        users = connection.cloud_native.users
+        api_list=[]
+        existing_users = users.find({"username":session['logged_in']})
+        for i in existing_users:
+            # print (str(i))
+            api_list.append(str(i))
+        user = {}
+        print (api_list)
+        if api_list != []:
+            print (request.form['email'])
+            user['email']=request.form['email']
+            user['name']= request.form['name']
+            user['password']=request.form['pass']
+            users.update({'username':session['logged_in']},{'$set': user} )
+        else:
+            return 'User not found!'
+        return redirect(url_for('index'))
+    if request.method=='GET':
+        users = connection.cloud_native.users
+        user=[]
+        print (session['username'])
+        existing_user = users.find({"username":session['logged_in']})
+        for i in existing_user:
+            user.append(i)
+        return render_template('profile.html', name=user[0]['name'], username=user[0]['username'], password=user[0]['password'], email=user[0]['email'])
+
+
+
+@app.route("/logout")
+def logout():
+    session['logged_in'] = False
+    return redirect(url_for('home'))
+
+@app.route('/signup', methods=['GET', 'POST'])
+def signup():
+    if request.method=='POST':
+        users = connection.cloud_native.users
+        api_list=[]
+        existing_user = users.find({'$or':[{"username":request.form['username']} ,{"email":request.form['email']}]})
+        for i in existing_user:
+            # print (str(i))
+            api_list.append(str(i))
+
+        # print (api_list)
+        if api_list == []:
+            users.insert({
+            "email": request.form['email'],
+            "id": random.randint(1,1000),
+            "name": request.form['name'],
+            "password": request.form['pass'],
+            "username": request.form['username']
+            })
+            session['username'] = request.form['username']
+            return redirect(url_for('home'))
+
+        return 'That user already exists'
+    else :
+        return render_template('signup.html')
+
 @app.route('/login', methods=['POST'])
 def do_admin_login():
-    users = mongo.db.users
-    api_list=[]
-    login_user = users.find({'username': request.form['username']})
-    for i in login_user:
-        api_list.append(i)
-    print (api_list)
-    if api_list != []:
-        # print (api_list[0]['password'].decode('utf-8'), bcrypt.hashpw(request.form['password'].encode('utf-8'), api_list[0]['password']).decode('utf-8'))
-        if api_list[0]['password'].decode('utf-8') == bcrypt.hashpw(request.form['password'].encode('utf-8'), api_list[0]['password']).decode('utf-8'):
-            session['logged_in'] = api_list[0]['username']
-            return redirect(url_for('index'))
-        return 'Invalide username/password!'
-    else:
-        flash("Invalid Authentication")
+	users = connection.cloud_native.users
+	api_list=[]
+	login_user = users.find({'username': request.form['username']})
+	for i in login_user:
+		api_list.append(i)
+	print (api_list)
+	if api_list != []:
+		# print (api_list[0]['password'].decode('utf-8'), bcrypt.hashpw(request.form['password'].encode('utf-8'), api_list[0]['password']).decode('utf-8'))
+		#if api_list[0]['password'] == bcrypt.hashpw(request.form['password'].encode('utf-8'), api_list[0]['password'].encode('utf-8')).decode('utf-8'):
+		if api_list[0]['password'] == request.form['password'] :
+			session['logged_in'] = api_list[0]['username']
+			return redirect(url_for('index'))
+		return 'Invalide username/password!'
+	else:
+		flash("Invalid Authentication")
 
-    return 'Invalid User!'
+	return 'Invalid User!'
 
 @app.route('/')
 def home():
@@ -83,6 +150,13 @@ def home():
 @app.route('/index')
 def index():
 	return render_template('index.html')
+
+
+
+
+
+
+
 
 #cookie = flask.request.cookies.get('my_cookie')
 #@app.route('/set_cookie')
