@@ -3,4 +3,4 @@
 
 
 Tweet masih guest dan tanpa db
-; Login, sign up, profile, logout selesai
+; Login dan sign up tanpa encrypt, profile, logout selesai
