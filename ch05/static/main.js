@@ -6,7 +6,7 @@ import cookie from 'react-cookie';
 	constructor(props){
      super(props);
      this.state =  { userId: cookie.load('session') };
-     this.state = {tweets:[{'id': 1, 'username': 'guest', 'body': '"Listen to your heart. It knows all things." - Paulo Coelho #Motivation' }]};
+     this.state = {tweets:[]};
     }
     
     addTweet(tweet){

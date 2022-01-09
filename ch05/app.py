@@ -81,7 +81,7 @@ def profile():
     if request.method=='GET':
         users = connection.cloud_native.users
         user=[]
-        print (session['username'])
+        #print (session['username'])
         existing_user = users.find({"username":session['logged_in']})
         for i in existing_user:
             user.append(i)
@@ -110,6 +110,7 @@ def signup():
             "email": request.form['email'],
             "id": random.randint(1,1000),
             "name": request.form['name'],
+            #"password": bcrypt.hashpw(request.form['pass'].encode('utf-8'), bcrypt.gensalt()),
             "password": request.form['pass'],
             "username": request.form['username']
             })
@@ -129,6 +130,7 @@ def do_admin_login():
 		api_list.append(i)
 	print (api_list)
 	if api_list != []:
+		#if api_list[0]['password'].decode('utf-8') == bcrypt.hashpw(request.form['password'].encode('utf-8'), api_list[0]['password']).decode('utf-8'):
 		# print (api_list[0]['password'].decode('utf-8'), bcrypt.hashpw(request.form['password'].encode('utf-8'), api_list[0]['password']).decode('utf-8'))
 		#if api_list[0]['password'] == bcrypt.hashpw(request.form['password'].encode('utf-8'), api_list[0]['password'].encode('utf-8')).decode('utf-8'):
 		if api_list[0]['password'] == request.form['password'] :
